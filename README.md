@@ -48,3 +48,44 @@ mandatory):
 You may refactor or add code as needed, but keep the existing structure.
 Aim to complete within 30 minutes.
 
+## Getting Started
+### Prerequisites
+- Java 17
+- Maven 3.x
+- Internet access (required for Google Books integration tests)
+
+### Clone and Build
+```bash
+git clone https://github.com/kiran4code/personal-book
+cd personal-book
+mvn clean test
+
+### Configure Google Books API Key
+
+This application integrates with the **Google Books API**. To run the Google search endpoint and integration tests, you must create and configure a Google API key.
+
+### Step 1: Create a Google Books API Key (Google Cloud Console)
+1. Open Google Cloud Console: https://console.cloud.google.com/
+2. Create a new project (or select an existing one).
+3. Enable the **Google Books API**:
+   - Go to **APIs & Services → Library**
+   - Search for **Google Books API** (Books API)
+   - Click **Enable**
+4. Create an API key:
+   - Go to **APIs & Services → Credentials**
+   - Click **Create Credentials → API key**
+5. (Recommended) Restrict the key:
+   - Open the created key in **Credentials**
+   - Under **API restrictions**, select **Restrict key**
+   - Choose **Google Books API** and save
+
+### Step 2: Configure the API key as an Environment Variable
+Set the API key in your environment:
+
+**Mac/Linux**
+``` bash
+export GOOGLE_BOOKS_API_KEY=PASTE_YOUR_KEY_HERE
+
+### Win
+``` cmd
+set GOOGLE_BOOKS_API_KEY=PASTE_YOUR_KEY_HERE
