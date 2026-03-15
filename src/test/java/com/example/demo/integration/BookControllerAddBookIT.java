@@ -147,4 +147,21 @@ class BookControllerAddBookIT {
                 .andExpect(jsonPath("$.kind").value("books#volumes"))
                 .andExpect(jsonPath("$.items[0].id").value("x1"));
     }
+    @Test
+    void postBooksByGoogleId_upstream404_returns400_andDoesNotPersist() throws Exception {
+        String googleId = "does-not-exist";
+
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(404)
+                .addHeader("Content-Type", "application/json")
+                .setBody("""
+                { "error": { "message": "Volume not found" } }
+            """));
+
+        mockMvc.perform(post("/books/{googleId}", googleId))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
+
+        assertThat(bookRepository.count()).isEqualTo(0);
+    }
 }
