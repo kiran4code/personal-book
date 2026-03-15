@@ -61,6 +61,7 @@ Aim to complete within 30 minutes.
 git clone https://github.com/kiran4code/personal-book.git
 cd personal-book
 mvn clean test
+mvn spring-boot:run
 
 ## Configure Google Books API Key
 
