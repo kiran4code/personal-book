@@ -49,18 +49,20 @@ You may refactor or add code as needed, but keep the existing structure.
 Aim to complete within 30 minutes.
 
 ## Getting Started
+
 ### Prerequisites
 - Java 17
 - Maven 3.x
-- Internet access (required for Google Books integration tests)
+- Internet access (required when calling the real Google Books API)
 
 ### Clone and Build
-```bash
-git clone https://github.com/kiran4code/personal-book
+
+## Open bash/cmd
+git clone https://github.com/kiran4code/personal-book.git
 cd personal-book
 mvn clean test
 
-### Configure Google Books API Key
+## Configure Google Books API Key
 
 This application integrates with the **Google Books API**. To run the Google search endpoint and integration tests, you must create and configure a Google API key.
 
@@ -83,9 +85,17 @@ This application integrates with the **Google Books API**. To run the Google sea
 Set the API key in your environment:
 
 **Mac/Linux**
-``` bash
-export GOOGLE_BOOKS_API_KEY=PASTE_YOUR_KEY_HERE
+## Open bash/cmd, run below commands to set env variable
+export GOOGLE_BOOKS_API_KEY=AIzaSyAnfLc_RBt9395nwSDOq4lfYvHpvNU6XPs
 
 ### Win
-``` cmd
-set GOOGLE_BOOKS_API_KEY=PASTE_YOUR_KEY_HERE
+## Open bash/cmd and run below command
+set GOOGLE_BOOKS_API_KEY=AIzaSyAnfLc_RBt9395nwSDOq4lfYvHpvNU6XPs
+
+### Call google end points
+## Open bash/cmd and run below command
+curl "http://localhost:8080/google?q=spring%20boot&maxResults=3"
+
+### Verify Saved in DB
+curl "http://localhost:8080/books"
+
