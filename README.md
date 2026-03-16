@@ -121,6 +121,9 @@ curl "http://localhost:8080/books"
 ### Run tests
 mvn test
 
+### Google Quota Exceeded
+if Google quota is exceeded, API may respond with 429.
+
 
 
         
