@@ -124,6 +124,10 @@ mvn test
 ### Google Quota Exceeded
 if Google quota is exceeded, API may respond with 429.
 
+### Get total count
+### Open windows PowerShell and run:
+(Invoke-RestMethod "http://localhost:8080/books").Count
+
 
 
         
