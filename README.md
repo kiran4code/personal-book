@@ -63,6 +63,14 @@ cd personal-book
 mvn clean test
 mvn spring-boot:run
 
+### H2 Database Notes
+-This project uses an in-memory H2 database for local runtime/testing.
+-Data is stored only while the application is running and is lost when the app stops.
+-If you have enabled the H2 console in application.properties, you can access it at:
+--http://localhost:8080/h2-console
+--Use the JDBC URL/username/password configured in your application.properties.
+--(If not configured, add H2 console properties and restart the app.)
+
 ## Configure Google Books API Key
 
 This application integrates with the **Google Books API**. To run the Google search endpoint and integration tests, you must create and configure a Google API key.
@@ -87,16 +95,35 @@ Set the API key in your environment:
 
 **Mac/Linux**
 ## Open bash/cmd, run below commands to set env variable
-export GOOGLE_BOOKS_API_KEY=AIzaSyAnfLc_RBt9395nwSDOq4lfYvHpvNU6XPs
+export GOOGLE_BOOKS_API_KEY=<PASTE_YOUR_KEY>
 
 ### Win
 ## Open bash/cmd and run below command
-set GOOGLE_BOOKS_API_KEY=AIzaSyAnfLc_RBt9395nwSDOq4lfYvHpvNU6XPs
+set GOOGLE_BOOKS_API_KEY=<PASTE_YOUR_KEY>
 
 ### Call google end points
 ## Open bash/cmd and run below command
 curl "http://localhost:8080/google?q=spring%20boot&maxResults=3"
 
+### Call google end points
+### Google search endpoint
+### Open bash/cmd and run:
+curl "http://localhost:8080/google?q=spring%20boot&maxResults=3"
+
+### Add a book to personal list by Google volume id
+### Open bash/cmd and run:
+curl -X POST "http://localhost:8080/books/lRtdEAAAQBAJ"
+
 ### Verify Saved in DB
 curl "http://localhost:8080/books"
+
+### Testing Notes
+### Run tests
+mvn test
+
+
+
+        
+
+
 
