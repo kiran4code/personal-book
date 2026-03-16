@@ -173,4 +173,17 @@ class BookControllerAddBookIT {
         assertThat(recorded.getPath()).contains("/volumes/" + googleId);
         assertThat(recorded.getPath()).contains("key=TEST_KEY");
     }
+    @Test
+    void googleSearch_upstream429_returns429_andErrorBody() throws Exception {
+        mockWebServer.enqueue(new MockResponse()
+                .setResponseCode(429)
+                .addHeader("Content-Type", "application/json")
+                .setBody("{\"error\":{\"message\":\"Quota exceeded\"}}"));
+
+        mockMvc.perform(get("/google").param("q", "java"))
+                .andExpect(status().isTooManyRequests())
+                .andExpect(jsonPath("$.code").value("GOOGLE_BOOKS_UPSTREAM_ERROR"));
+
+        mockWebServer.takeRequest();
+    }
 }

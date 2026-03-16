@@ -52,31 +52,45 @@ public class GoogleBookService {
                             .queryParam("q", query)
                             .queryParam("maxResults", maxResults != null ? maxResults : 10)
                             .queryParam("startIndex", startIndex != null ? startIndex : 0)
+                            .queryParam("key", apiKey) // ADDED: include API key
                             .build())
                     .retrieve()
                     .body(GoogleBook.class);
-            // ADDED: persist response into DB using BookRepository
+
+            // KEEP: persist response into DB using BookRepository
             if (googleBook != null && googleBook.items() != null) {
-                int saved = 0;                                  // ADDED: track saves
+                int saved = 0;
 
                 for (GoogleBook.Item item : googleBook.items()) {
-                    // ADDED: slightly stronger null checks
                     if (item == null || item.id() == null || item.volumeInfo() == null) continue;
                     if (item.volumeInfo().title() == null) continue;
 
-                    // ADDED: prevent duplicate insert (id is primary key)
                     if (!bookRepository.existsById(item.id())) {
-                        Book book = bookMapper.toEntity(item);  // CHANGED: mapping moved to mapper
+                        Book book = bookMapper.toEntity(item);
                         bookRepository.save(book);
-                        saved++;                                // ADDED
+                        saved++;
                     }
                 }
-                log.info("Google search completed for q='{}', saved={}", query, saved); // ADDED
+                log.info("Google search completed for q='{}', saved={}", query, saved);
             }
+
             return googleBook;
-        }catch (Exception e) {
-            log.error("Error while calling Google or saving books", e);
-            throw e;
+
+        } catch (RestClientResponseException ex) {
+            HttpStatusCode sc = HttpStatusCode.valueOf(ex.getRawStatusCode());
+
+            if (sc.value() == 401 || sc.value() == 403) {
+                throw new com.example.demo.exception.GoogleBooksAuthException(
+                        "Invalid or missing Google Books API key", sc, ex);
+            }
+
+            // 429 + 5xx + any other upstream error -> client exception
+            throw new com.example.demo.exception.GoogleBooksClientException(
+                    "Google Books upstream error: " + sc.value(), sc, ex);
+
+        } catch (Exception ex) {
+            throw new com.example.demo.exception.GoogleBooksClientException(
+                    "Google Books timeout/unreachable", HttpStatus.GATEWAY_TIMEOUT, ex);
         }
     }
     public GoogleVolume fetchVolumeById(String googleId) {
