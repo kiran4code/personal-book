@@ -116,36 +116,40 @@ class BookControllerAddBookIT {
                 .setResponseCode(200)
                 .addHeader("Content-Type", "application/json")
                 .setBody("""
+                {
+                  "kind": "books#volumes",
+                  "totalItems": 1,
+                  "items": [
                     {
-                      "kind": "books#volumes",
-                      "totalItems": 1,
-                      "items": [
-                        {
-                          "id": "x1",
-                          "selfLink": "s",
-                          "volumeInfo": {
-                            "title": "Some Title",
-                            "authors": ["Auth"],
-                            "pageCount": 111,
-                            "publishedDate": "2020",
-                            "publisher": "P",
-                            "printType": "BOOK",
-                            "maturityRating": "NOT_MATURE",
-                            "categories": ["C"],
-                            "language": "en",
-                            "previewLink": "p",
-                            "infoLink": "i"
-                          },
-                          "searchInfo": { "textSnippet": "snip" }
-                        }
-                      ]
+                      "id": "x1",
+                      "selfLink": "s",
+                      "volumeInfo": {
+                        "title": "Some Title",
+                        "authors": ["Auth"],
+                        "pageCount": 111,
+                        "publishedDate": "2020",
+                        "publisher": "P",
+                        "printType": "BOOK",
+                        "maturityRating": "NOT_MATURE",
+                        "categories": ["C"],
+                        "language": "en",
+                        "previewLink": "p",
+                        "infoLink": "i"
+                      },
+                      "searchInfo": { "textSnippet": "snip" }
                     }
-                """));
+                  ]
+                }
+            """));
 
         mockMvc.perform(get("/google").param("q", "java"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.kind").value("books#volumes"))
                 .andExpect(jsonPath("$.items[0].id").value("x1"));
+
+        // consume + verify downstream call so no leftover requests affect other tests
+        var recorded = mockWebServer.takeRequest();
+        assertThat(recorded.getPath()).contains("/volumes?q=");
     }
     @Test
     void postBooksByGoogleId_upstream404_returns400_andDoesNotPersist() throws Exception {
@@ -163,5 +167,10 @@ class BookControllerAddBookIT {
                 .andExpect(jsonPath("$.code").value("VALIDATION_ERROR"));
 
         assertThat(bookRepository.count()).isEqualTo(0);
+
+        // consume + verify downstream call so no leftover requests affect other tests
+        var recorded = mockWebServer.takeRequest();
+        assertThat(recorded.getPath()).contains("/volumes/" + googleId);
+        assertThat(recorded.getPath()).contains("key=TEST_KEY");
     }
 }
